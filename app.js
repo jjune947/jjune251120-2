@@ -100,13 +100,15 @@ function initAnimatedBackground() {
         left: '0',
         width: '100%',
         height: '100%',
-        zIndex: '-1'
+        zIndex: '-1',
+        backgroundColor: '#f0f2f5' // Add a solid background color
     });
     document.body.insertBefore(canvas, root);
     const ctx = canvas.getContext('2d');
     
     let width, height;
-    let time = 0;
+    const hearts = [];
+    const heartCount = 50;
 
     const resize = () => {
         width = window.innerWidth;
@@ -115,25 +117,88 @@ function initAnimatedBackground() {
         canvas.height = height;
     };
 
-    const animate = () => {
-        time += 0.002;
-        const x = Math.cos(time) * width / 2 + width / 2;
-        const y = Math.sin(time) * height / 2 + height / 2;
-        const x2 = Math.cos(time + Math.PI) * width / 2 + width / 2;
-        const y2 = Math.sin(time + Math.PI) * height / 2 + height / 2;
+    function drawHeart(x, y, size, alpha) {
+        ctx.fillStyle = `rgba(255, 105, 180, ${alpha})`; // Pink with opacity
+        ctx.beginPath();
+        const topCurveHeight = size * 0.3;
+        ctx.moveTo(x, y + topCurveHeight);
+        // top left curve
+        ctx.bezierCurveTo(
+            x, y,
+            x - size / 2, y,
+            x - size / 2, y + topCurveHeight
+        );
+        // bottom left curve
+        ctx.bezierCurveTo(
+            x - size / 2, y + (size + topCurveHeight) / 2,
+            x, y + (size + topCurveHeight) / 2,
+            x, y + size
+        );
+        // bottom right curve
+        ctx.bezierCurveTo(
+            x, y + (size + topCurveHeight) / 2,
+            x + size / 2, y + (size + topCurveHeight) / 2,
+            x + size / 2, y + topCurveHeight
+        );
+        // top right curve
+        ctx.bezierCurveTo(
+            x + size / 2, y,
+            x, y,
+            x, y + topCurveHeight
+        );
+        ctx.closePath();
+        ctx.fill();
+    }
 
-        const gradient = ctx.createLinearGradient(x, y, x2, y2);
-        gradient.addColorStop(0, '#fbc2eb');
-        gradient.addColorStop(1, '#a6c1ee');
+    class Heart {
+        constructor() {
+            this.reset();
+        }
 
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
+        reset() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height + height;
+            this.size = Math.random() * 20 + 10;
+            this.speed = Math.random() * 2 + 1;
+            this.alpha = Math.random() * 0.5 + 0.2;
+        }
 
-        requestAnimationFrame(animate);
+        update() {
+            this.y -= this.speed;
+            if (this.y < -this.size) {
+                this.reset();
+                this.y = height + this.size;
+            }
+        }
+
+        draw() {
+            drawHeart(this.x, this.y, this.size, this.alpha);
+        }
+    }
+
+    const createHearts = () => {
+        hearts.length = 0; // Clear existing hearts
+        for (let i = 0; i < heartCount; i++) {
+            hearts.push(new Heart());
+        }
     };
 
-    window.addEventListener('resize', resize);
+    const animate = () => {
+        ctx.clearRect(0, 0, width, height);
+        for (const heart of hearts) {
+            heart.update();
+            heart.draw();
+        }
+        requestAnimationFrame(animate);
+    };
+    
+    window.addEventListener('resize', () => {
+        resize();
+        createHearts();
+    });
+
     resize();
+    createHearts();
     animate();
 }
 
