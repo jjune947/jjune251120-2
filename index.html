@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI 입력기</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+        }
+        #tsparticles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.85); /* Slightly transparent */
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+            margin: auto; /* Center in the viewport */
+            position: relative; /* Needed for z-index */
+            z-index: 1;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 24px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p#result {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #28a745;
+            font-weight: 500;
+            height: 25px; /* 공간 확보 */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tsparticles"></div>
+    <div class="container">
+        <h1>당신의 MBTI를 알려주세요!</h1>
+        <input type="text" id="mbtiInput" placeholder="예: INFP" maxlength="4">
+        <button onclick="showMessage()">입력</button>
+        <p id="result"></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tsparticles/all@latest/tsparticles.all.bundle.min.js"></script>
+
+    <script>
+        // tsParticles init
+        tsParticles.load("tsparticles", {
+            fpsLimit: 60,
+            interactivity: {
+                events: {
+                    onHover: {
+                        enable: true,
+                        mode: "repulse",
+                    },
+                    onClick: {
+                        enable: true,
+                        mode: "push",
+                    },
+                    resize: true,
+                },
+                modes: {
+                    push: {
+                        quantity: 4,
+                    },
+                    repulse: {
+                        distance: 150,
+                        duration: 0.4,
+                    },
+                },
+            },
+            particles: {
+                color: {
+                    value: "#007bff",
+                },
+                links: {
+                    color: "#007bff",
+                    distance: 150,
+                    enable: true,
+                    opacity: 0.5,
+                    width: 1,
+                },
+                collisions: {
+                    enable: true,
+                },
+                move: {
+                    direction: "none",
+                    enable: true,
+                    outModes: {
+                        default: "bounce",
+                    },
+                    random: false,
+                    speed: 2,
+                    straight: false,
+                },
+                number: {
+                    density: {
+                        enable: true,
+                        area: 800,
+                    },
+                    value: 80,
+                },
+                opacity: {
+                    value: 0.5,
+                },
+                shape: {
+                    type: "circle",
+                },
+                size: {
+                    value: { min: 1, max: 5 },
+                },
+            },
+            detectRetina: true,
+        });
+
+        // Original script
+        function showMessage() {
+            const mbtiInput = document.getElementById('mbtiInput');
+            const resultParagraph = document.getElementById('result');
+            
+            if (mbtiInput.value.trim() !== '') {
+                resultParagraph.textContent = '좋아요!';
+            } else {
+                resultParagraph.textContent = ''; // 입력값이 없으면 메시지 숨김
+            }
+        }
+
+        // 엔터 키로도 입력 가능하게
+        document.getElementById('mbtiInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                showMessage();
+            }
+        });
+    </script>
+
+</body>
+</html>
