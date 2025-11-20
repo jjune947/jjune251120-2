@@ -78,8 +78,8 @@
     <div class="container">
         <h1>당신의 MBTI를 알려주세요!</h1>
         <input type="text" id="mbtiInput" placeholder="예: INFP" maxlength="4">
-        <button onclick="showMessage()">입력</button>
-        <p id="result"></p>
+        <button onclick="showResult()">입력</button>
+        <p id="error-message" style="color: red; height: 20px;"></p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tsparticles/all@latest/tsparticles.all.bundle.min.js"></script>
@@ -154,22 +154,23 @@
             detectRetina: true,
         });
 
-        // Original script
-        function showMessage() {
+        // Redirect to result page
+        function showResult() {
             const mbtiInput = document.getElementById('mbtiInput');
-            const resultParagraph = document.getElementById('result');
-            
-            if (mbtiInput.value.trim() !== '') {
-                resultParagraph.textContent = '좋아요!';
+            const errorMessage = document.getElementById('error-message');
+            const mbtiValue = mbtiInput.value.trim();
+
+            if (mbtiValue) {
+                window.location.href = `result.html?mbti=${mbtiValue}`;
             } else {
-                resultParagraph.textContent = ''; // 입력값이 없으면 메시지 숨김
+                errorMessage.textContent = 'MBTI를 입력해주세요!';
             }
         }
 
         // 엔터 키로도 입력 가능하게
         document.getElementById('mbtiInput').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
-                showMessage();
+                showResult();
             }
         });
     </script>
