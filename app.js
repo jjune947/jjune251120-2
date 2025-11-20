@@ -12,8 +12,7 @@ const root = document.getElementById('root');
 const bodyStyles = {
     fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
     margin: '0',
-    backgroundColor: '#f0f2f5',
-    transition: 'background-color 0.5s ease'
+    backgroundColor: 'transparent', // Make body transparent to see canvas
 };
 
 const containerStyles = {
@@ -92,12 +91,57 @@ const resultPStyles = {
     textAlign: 'left'
 };
 
+// --- ANIMATED BACKGROUND ---
+function initAnimatedBackground() {
+    const canvas = document.createElement('canvas');
+    applyStyles(canvas, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        zIndex: '-1'
+    });
+    document.body.insertBefore(canvas, root);
+    const ctx = canvas.getContext('2d');
+    
+    let width, height;
+    let time = 0;
+
+    const resize = () => {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = width;
+        canvas.height = height;
+    };
+
+    const animate = () => {
+        time += 0.002;
+        const x = Math.cos(time) * width / 2 + width / 2;
+        const y = Math.sin(time) * height / 2 + height / 2;
+        const x2 = Math.cos(time + Math.PI) * width / 2 + width / 2;
+        const y2 = Math.sin(time + Math.PI) * height / 2 + height / 2;
+
+        const gradient = ctx.createLinearGradient(x, y, x2, y2);
+        gradient.addColorStop(0, '#fbc2eb');
+        gradient.addColorStop(1, '#a6c1ee');
+
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+
+        requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('resize', resize);
+    resize();
+    animate();
+}
+
+
 // --- RENDER FUNCTIONS ---
 
 function renderHomePage() {
     root.innerHTML = ''; // Clear previous content
-    applyStyles(document.body, bodyStyles);
-
     const container = document.createElement('div');
     applyStyles(container, containerStyles);
 
@@ -131,9 +175,6 @@ function renderHomePage() {
 
     container.append(h1, input, button, errorMessage);
     root.appendChild(container);
-    
-    // Reset background color if coming from result page
-    document.body.style.backgroundColor = '#f0f2f5';
 }
 
 function renderResultPage() {
@@ -144,6 +185,9 @@ function renderResultPage() {
 
     const container = document.createElement('div');
     applyStyles(container, resultContainerStyles);
+    // Use the result color for the container background for a nice effect
+    container.style.backgroundColor = 'rgba(255, 255, 255, 0.85)';
+
 
     const h1 = document.createElement('h1');
     h1.textContent = mbti;
@@ -162,9 +206,6 @@ function renderResultPage() {
 
     container.append(h1, p, backButton);
     root.appendChild(container);
-
-    // Apply dynamic background color
-    document.body.style.backgroundColor = result.color;
 }
 
 // --- LOGIC & ROUTER ---
@@ -198,56 +239,13 @@ function router() {
 window.addEventListener('hashchange', router);
 // Load initial route
 window.addEventListener('load', () => {
+    applyStyles(document.body, bodyStyles);
+    initAnimatedBackground();
+
     // Set initial hash if none
     if (!window.location.hash) {
         window.location.hash = '/';
     }
     // Render initial page
     router();
-    
-    // tsParticles init
-    const particlesContainer = document.createElement('div');
-    particlesContainer.id = 'tsparticles';
-    applyStyles(particlesContainer, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        zIndex: '-1'
-    });
-    document.body.insertBefore(particlesContainer, root);
-    
-    tsParticles.load("tsparticles", {
-        fpsLimit: 60,
-        interactivity: {
-            events: {
-                onHover: { enable: true, mode: "repulse" },
-                onClick: { enable: true, mode: "push" },
-                resize: true,
-            },
-            modes: {
-                push: { quantity: 4 },
-                repulse: { distance: 150, duration: 0.4 },
-            },
-        },
-        particles: {
-            color: { value: "#007bff" },
-            links: { color: "#007bff", distance: 150, enable: true, opacity: 0.5, width: 1 },
-            collisions: { enable: true },
-            move: {
-                direction: "none",
-                enable: true,
-                outModes: { default: "bounce" },
-                random: false,
-                speed: 2,
-                straight: false,
-            },
-            number: { density: { enable: true, area: 800 }, value: 80 },
-            opacity: { value: 0.5 },
-            shape: { type: "circle" },
-            size: { value: { min: 1, max: 5 } },
-        },
-        detectRetina: true,
-    });
 });
