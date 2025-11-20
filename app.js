@@ -258,6 +258,10 @@ function renderResultPage() {
     h1.textContent = mbti;
     applyStyles(h1, resultH1Styles);
 
+    const 멋지네요 = document.createElement('p');
+    멋지네요.textContent = '멋지네요!';
+    applyStyles(멋지네요, resultPStyles);
+
     const p = document.createElement('p');
     p.textContent = result.description;
     applyStyles(p, resultPStyles);
@@ -269,7 +273,7 @@ function renderResultPage() {
     backButton.onmouseover = () => backButton.style.backgroundColor = '#0056b3';
     backButton.onmouseout = () => backButton.style.backgroundColor = '#007bff';
 
-    container.append(h1, p, backButton);
+    container.append(h1, 멋지네요, p, backButton);
     root.appendChild(container);
 }
 
